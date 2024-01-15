@@ -184,9 +184,12 @@ func (m *Module) HandleMsgExecuteContract(index int, tx *juno.Tx, msg *wasmtypes
 		return fmt.Errorf("error while saving contract address inside the involved addresses in message table: %s", err)
 	}
 
-	err = m.ParseContractDetails(msg.Contract, tx.Height)
-	if err != nil {
-		return fmt.Errorf("error while saving contract details in db: %s", err)
+	contractExists := m.db.CheckIfContractExistsInDB(msg.Contract)
+	if !contractExists {
+		err = m.ParseContractDetails(msg.Contract, tx.Height)
+		if err != nil {
+			return fmt.Errorf("error while saving contract details in db: %s", err)
+		}
 	}
 
 	return m.db.SaveWasmExecuteContract(
