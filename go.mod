@@ -6,7 +6,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	github.com/cometbft/cometbft v0.38.2
 	github.com/cosmos/cosmos-sdk v0.46.15
-	github.com/forbole/juno/v5 v5.0.0-20240102102059-0f91fef36cd5
+	github.com/forbole/juno/v5 v5.0.0-20240120123259-ab64bbdfef67
 	github.com/go-co-op/gocron v1.18.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/ingenuity-build/quicksilver v1.2.17
