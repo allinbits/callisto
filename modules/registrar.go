@@ -1,8 +1,6 @@
 package modules
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/forbole/bdjuno/v4/modules/actions"
 	"github.com/forbole/bdjuno/v4/modules/superfluid"
 	"github.com/forbole/bdjuno/v4/modules/types"
@@ -10,6 +8,7 @@ import (
 	"github.com/forbole/juno/v5/modules/telemetry"
 
 	"github.com/forbole/bdjuno/v4/modules/slashing"
+	juno "github.com/forbole/juno/v5/types"
 
 	jmodules "github.com/forbole/juno/v5/modules"
 	"github.com/forbole/juno/v5/modules/messages"
@@ -36,8 +35,8 @@ import (
 
 // UniqueAddressesParser returns a wrapper around the given parser that removes all duplicated addresses
 func UniqueAddressesParser(parser messages.MessageAddressesParser) messages.MessageAddressesParser {
-	return func(cdc codec.Codec, msg sdk.Msg) ([]string, error) {
-		addresses, err := parser(cdc, msg)
+	return func(tx *juno.Tx) ([]string, error) {
+		addresses, err := parser(tx)
 		if err != nil {
 			return nil, err
 		}

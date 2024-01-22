@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	v3 "github.com/forbole/bdjuno/v4/cmd/migrate/v3"
+	msgexec "github.com/forbole/juno/v5/cmd/migrate/msgexec"
 )
 
 type Migrator func(parseCfg *parsecmdtypes.Config) error
@@ -15,6 +16,7 @@ type Migrator func(parseCfg *parsecmdtypes.Config) error
 var (
 	migrations = map[string]Migrator{
 		"v3": v3.RunMigration,
+		"msgexec": msgexec.RunMigration,
 	}
 )
 
