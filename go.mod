@@ -6,7 +6,7 @@ require (
 	github.com/Agoric/agoric-sdk/golang/cosmos v0.0.0-20231224064603-a0d8229524d8
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cosmos/cosmos-sdk v0.45.16
-	github.com/forbole/juno/v5 v5.0.0-20240105025439-e306fa1cd561
+	github.com/forbole/juno/v5 v5.0.0-20240122025348-f3cb8b234886
 	github.com/go-co-op/gocron v1.19.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/jmoiron/sqlx v1.3.5

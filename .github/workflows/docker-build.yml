@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - chains/*/*
+      - cosmos/*/*
 
 jobs:
   docker:
