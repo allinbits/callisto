@@ -17,7 +17,7 @@ import (
 	"github.com/forbole/bdjuno/v4/database"
 	"github.com/forbole/bdjuno/v4/modules"
 
-	gaiaapp "github.com/cosmos/gaia/v14/app"
+	govgenapp "github.com/atomone-hub/govgen/app"
 )
 
 func main() {
@@ -57,7 +57,7 @@ func main() {
 func getBasicManagers() []module.BasicManager {
 	return []module.BasicManager{
 		simapp.ModuleBasics,
-		gaiaapp.ModuleBasics,
+		govgenapp.ModuleBasics,
 	}
 }
 

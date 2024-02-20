@@ -3,9 +3,9 @@ module github.com/forbole/bdjuno/v4
 go 1.19
 
 require (
+	github.com/atomone-hub/govgen v0.0.0-20240216125422-eb7bce76c600
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cosmos/cosmos-sdk v0.45.16
-	github.com/cosmos/gaia/v14 v14.1.0
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/ibc-go/v4 v4.5.1
 	github.com/cosmos/interchain-security/v2 v2.0.0
