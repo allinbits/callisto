@@ -6,6 +6,10 @@ on:
       - cosmos/*/*
       - chains/*/*
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -23,16 +27,26 @@ jobs:
         shell: bash
         run: echo "GITHUB_VERSION=$(git describe --tags)" >> $GITHUB_ENV
 
-      - name: Prepare tags 🏷️
-        id: prep
-        run: |
-          DOCKER_IMAGE=${{ secrets.DOCKERHUB_BDJUNO_REPO }}
-          CHAIN_NAME="${{env.CHAIN_NAME}}"
-          VERSION="${{env.GITHUB_VERSION}}"
-          TAGS="${DOCKER_IMAGE}:${CHAIN_NAME}-${VERSION}"
-          echo ::set-output name=version::${VERSION}
-          echo ::set-output name=tags::${TAGS}
-          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      - name: Docker metadata ${{ matrix.image }}
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ env.CHAIN_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ env.GITHUB_VERSION }}
+            type=semver,pattern=v{{version}}
+
+      # - name: Prepare tags 🏷️
+      #   id: prep
+      #   run: |
+      #     DOCKER_IMAGE=${{ secrets.DOCKERHUB_BDJUNO_REPO }}
+      #     CHAIN_NAME="${{env.CHAIN_NAME}}"
+      #     VERSION="${{env.GITHUB_VERSION}}"
+      #     TAGS="${DOCKER_IMAGE}:${CHAIN_NAME}-${VERSION}"
+      #     echo ::set-output name=version::${VERSION}
+      #     echo ::set-output name=tags::${TAGS}
+      #     echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
       - name: Determine Dockerfile to use 🔍
         run: |
@@ -46,11 +60,12 @@ jobs:
       - name: Set up Docker Buildx 🧰
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub 👤
-        uses: docker/login-action@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push 📤
         uses: docker/build-push-action@v5
@@ -58,4 +73,5 @@ jobs:
           context: .
           file: "./${{ env.DOCKERFILE }}"
           push: true
-          tags: ${{ steps.prep.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
