@@ -19,7 +19,7 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	ccvprovidertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/atomone-hub/govgen/x/gov/types"
 )
 
 func (m *Module) UpdateProposal(height int64, blockTime time.Time, id uint64) error {
@@ -227,7 +227,7 @@ func (m *Module) updateProposalValidatorStatusesSnapshot(
 		return fmt.Errorf("error while getting validator statuses: %s", err)
 	}
 
-	var snapshots = make([]types.ProposalValidatorStatusSnapshot, len(validators))
+	snapshots := make([]types.ProposalValidatorStatusSnapshot, len(validators))
 	for index, validator := range validators {
 		consAddr, err := validator.GetConsAddr()
 		if err != nil {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/forbole/bdjuno/v4/types"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/atomone-hub/govgen/x/gov/types"
 	"github.com/rs/zerolog/log"
 )
 
