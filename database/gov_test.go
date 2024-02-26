@@ -13,13 +13,13 @@ import (
 	"github.com/forbole/bdjuno/v4/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/atomone-hub/govgen/x/gov/types"
 
 	dbtypes "github.com/forbole/bdjuno/v4/database/types"
 )
 
 func (suite *DbTestSuite) TestBigDipperDb_SaveGovParams() {
-	votingParams := govtypes.NewVotingParams(time.Second * 10)
+	votingParams := govtypes.NewVotingParams(time.Second*10, time.Second*10, time.Second*10, time.Second*10)
 	tallyParams := govtypes.NewTallyParams(sdk.NewDec(10), sdk.NewDec(10), sdk.NewDec(10))
 	depositParams := govtypes.NewDepositParams(sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(10))), time.Minute*5)
 	original := types.NewGovParams(types.NewVotingParams(votingParams), types.NewDepositParam(depositParams), types.NewTallyParams(tallyParams), 10)
