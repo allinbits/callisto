@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/atomone-hub/govgen/x/gov/types"
 )
 
 const (
@@ -28,13 +28,23 @@ func NewDepositParam(d govtypes.DepositParams) DepositParams {
 
 // VotingParams contains the voting parameters of the x/gov module
 type VotingParams struct {
-	VotingPeriod int64 `json:"voting_period,omitempty" yaml:"voting_period"`
+	VotingPeriodDefault int64 `json:"voting_period_default,omitempty" yaml:"voting_period_default"`
+	// Length of the voting period for parameter change proposal.
+	VotingPeriodParameterChange int64 `json:"voting_period_parameter_change,omitempty" yaml:"voting_period_parameter_change"`
+	// Length of the voting period for software upgrade and cancel software
+	// upgrade proposal.
+	VotingPeriodSoftwareUpgrade int64 `json:"voting_period_software_upgrade,omitempty" yaml:"voting_period_software_upgrade"`
+	// Length of the voting period for text proposal.
+	VotingPeriodText int64 `json:"voting_period_text,omitempty" yaml:"voting_period_text"`
 }
 
 // NewVotingParams allows to build a new VotingParams instance
 func NewVotingParams(v govtypes.VotingParams) VotingParams {
 	return VotingParams{
-		VotingPeriod: v.VotingPeriod.Nanoseconds(),
+		VotingPeriodDefault:         v.VotingPeriodDefault.Nanoseconds(),
+		VotingPeriodParameterChange: v.VotingPeriodParameterChange.Nanoseconds(),
+		VotingPeriodSoftwareUpgrade: v.VotingPeriodSoftwareUpgrade.Nanoseconds(),
+		VotingPeriodText:            v.VotingPeriodText.Nanoseconds(),
 	}
 }
 

@@ -2,16 +2,15 @@ package gov
 
 import (
 	"fmt"
-	"time"
-
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
 	"github.com/forbole/bdjuno/v4/types"
 
+	govtypes "github.com/atomone-hub/govgen/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	juno "github.com/forbole/juno/v5/types"
 )
 

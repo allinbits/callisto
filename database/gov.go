@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	govtypes "github.com/atomone-hub/govgen/x/gov/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/gogo/protobuf/proto"
 
@@ -19,7 +19,6 @@ import (
 
 // SaveGovParams saves the given x/gov parameters inside the database
 func (db *Db) SaveGovParams(params *types.GovParams) error {
-
 	depositParamsBz, err := json.Marshal(&params.DepositParams)
 	if err != nil {
 		return fmt.Errorf("error while marshaling deposit params: %s", err)
@@ -412,7 +411,6 @@ WHERE proposal_validator_status_snapshot.height <= excluded.height`
 
 // SaveSoftwareUpgradePlan allows to save the given software upgrade plan with its proposal id
 func (db *Db) SaveSoftwareUpgradePlan(proposalID uint64, plan upgradetypes.Plan, height int64) error {
-
 	stmt := `
 INSERT INTO software_upgrade_plan(proposal_id, plan_name, upgrade_height, info, height) 
 VALUES ($1, $2, $3, $4, $5)

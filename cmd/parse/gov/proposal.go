@@ -9,7 +9,7 @@ import (
 	modulestypes "github.com/forbole/bdjuno/v4/modules/types"
 	"github.com/rs/zerolog/log"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/atomone-hub/govgen/x/gov/types"
 	parsecmdtypes "github.com/forbole/juno/v5/cmd/parse/types"
 	"github.com/forbole/juno/v5/types/config"
 	"github.com/spf13/cobra"
