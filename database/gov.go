@@ -332,14 +332,6 @@ func (db *Db) SaveTallyResults(tallys []types.TallyResult) error {
 	}
 
 	query = query[:len(query)-1] // Remove trailing ","
-	query += `
-ON CONFLICT ON CONSTRAINT unique_tally_result DO UPDATE 
-	SET yes = excluded.yes, 
-	    abstain = excluded.abstain, 
-	    no = excluded.no, 
-	    no_with_veto = excluded.no_with_veto,
-	    height = excluded.height
-WHERE proposal_tally_result.height <= excluded.height`
 	_, err := db.SQL.Exec(query, param...)
 	if err != nil {
 		return fmt.Errorf("error while storing tally result: %s", err)
@@ -354,13 +346,7 @@ WHERE proposal_tally_result.height <= excluded.height`
 func (db *Db) SaveProposalStakingPoolSnapshot(snapshot types.ProposalStakingPoolSnapshot) error {
 	stmt := `
 INSERT INTO proposal_staking_pool_snapshot (proposal_id, bonded_tokens, not_bonded_tokens, height)
-VALUES ($1, $2, $3, $4)
-ON CONFLICT ON CONSTRAINT unique_staking_pool_snapshot DO UPDATE SET
-	proposal_id = excluded.proposal_id,
-    bonded_tokens = excluded.bonded_tokens,
-	not_bonded_tokens = excluded.not_bonded_tokens, 
-	height = excluded.height
-WHERE proposal_staking_pool_snapshot.height <= excluded.height`
+VALUES ($1, $2, $3, $4)`
 
 	_, err := db.SQL.Exec(stmt,
 		snapshot.ProposalID, snapshot.Pool.BondedTokens.String(), snapshot.Pool.NotBondedTokens.String(), snapshot.Pool.Height)
@@ -392,15 +378,6 @@ VALUES `
 	}
 
 	stmt = stmt[:len(stmt)-1]
-	stmt += `
-ON CONFLICT ON CONSTRAINT unique_validator_status_snapshot DO UPDATE 
-	SET proposal_id = excluded.proposal_id,
-		validator_address = excluded.validator_address,
-		voting_power = excluded.voting_power, 
-		status = excluded.status, 
-		jailed = excluded.jailed,
-		height = excluded.height
-WHERE proposal_validator_status_snapshot.height <= excluded.height`
 	_, err := db.SQL.Exec(stmt, args...)
 	if err != nil {
 		return fmt.Errorf("error while storing proposal validator statuses snapshot: %s", err)
