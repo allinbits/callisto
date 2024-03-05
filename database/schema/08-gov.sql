@@ -44,8 +44,7 @@ CREATE TABLE proposal_vote
     voter_address TEXT    NOT NULL REFERENCES account (address),
     option        TEXT    NOT NULL,
     timestamp     TIMESTAMP,
-    height        BIGINT  NOT NULL,
-    CONSTRAINT unique_vote UNIQUE (proposal_id, voter_address)
+    height        BIGINT  NOT NULL
 );
 CREATE INDEX proposal_vote_proposal_id_index ON proposal_vote (proposal_id);
 CREATE INDEX proposal_vote_voter_address_index ON proposal_vote (voter_address);
@@ -53,7 +52,7 @@ CREATE INDEX proposal_vote_height_index ON proposal_vote (height);
 
 CREATE TABLE proposal_tally_result
 (
-    proposal_id  INTEGER REFERENCES proposal (id) PRIMARY KEY,
+    proposal_id  INTEGER REFERENCES proposal (id),
     yes          TEXT NOT NULL,
     abstain      TEXT NOT NULL,
     no           TEXT NOT NULL,
@@ -65,7 +64,7 @@ CREATE INDEX proposal_tally_result_height_index ON proposal_tally_result (height
 
 CREATE TABLE proposal_staking_pool_snapshot
 (
-    proposal_id       INTEGER REFERENCES proposal (id) PRIMARY KEY,
+    proposal_id       INTEGER REFERENCES proposal (id),
     bonded_tokens     TEXT   NOT NULL,
     not_bonded_tokens TEXT   NOT NULL,
     height            BIGINT NOT NULL
