@@ -42,7 +42,7 @@ func (m *Module) UpdateProposal(height int64, blockTime time.Time, id uint64) er
 		return fmt.Errorf("error while updating proposal status: %s", err)
 	}
 
-	err = m.updateProposalTallyResult(proposal)
+	err = m.updateProposalTallyResult(proposal.ProposalId, height)
 	if err != nil {
 		return fmt.Errorf("error while updating proposal tally result: %s", err)
 	}
@@ -150,20 +150,15 @@ func (m *Module) updateProposalStatus(proposal govtypes.Proposal) error {
 }
 
 // updateProposalTallyResult updates the tally result associated with the given proposal
-func (m *Module) updateProposalTallyResult(proposal govtypes.Proposal) error {
-	height, err := m.db.GetLastBlockHeight()
-	if err != nil {
-		return err
-	}
-
-	result, err := m.source.TallyResult(height, proposal.ProposalId)
+func (m *Module) updateProposalTallyResult(proposalId uint64, height int64) error {
+	result, err := m.source.TallyResult(height, proposalId)
 	if err != nil {
 		return fmt.Errorf("error while getting tally result: %s", err)
 	}
 
 	return m.db.SaveTallyResults([]types.TallyResult{
 		types.NewTallyResult(
-			proposal.ProposalId,
+			proposalId,
 			result.Yes.String(),
 			result.Abstain.String(),
 			result.No.String(),

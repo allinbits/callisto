@@ -113,7 +113,25 @@ func (m *Module) handleMsgVote(tx *juno.Tx, msg *govtypes.MsgVote) error {
 		return fmt.Errorf("error while parsing time: %s", err)
 	}
 
-	vote := types.NewVote(msg.ProposalId, msg.Voter, msg.Option, txTimestamp, tx.Height)
+	vote := types.NewVote(msg.ProposalId, msg.Voter, msg.Option, "1.0", txTimestamp, tx.Height)
 
 	return m.db.SaveVote(vote)
+}
+
+func (m *Module) handleMsgVoteWeighted(tx *juno.Tx, msg *govtypes.MsgVoteWeighted) error {
+	txTimestamp, err := time.Parse(time.RFC3339, tx.Timestamp)
+	if err != nil {
+		return fmt.Errorf("error while parsing time: %s", err)
+	}
+
+	for _, option := range msg.Options {
+		vote := types.NewVote(msg.ProposalId, msg.Voter, option.Option, option.Weight.String(), txTimestamp, tx.Height)
+		err = m.db.SaveVote(vote)
+		if err != nil {
+			return fmt.Errorf("error while saving weighted vote for address %s: %s", msg.Voter, err)
+		}
+	}
+
+	// update tally result for given proposal
+	return m.updateProposalTallyResult(msg.ProposalId, tx.Height)
 }
