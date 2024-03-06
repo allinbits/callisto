@@ -289,12 +289,7 @@ WHERE proposal_deposit.height <= excluded.height`
 func (db *Db) SaveVote(vote types.Vote) error {
 	query := `
 INSERT INTO proposal_vote (proposal_id, voter_address, option, timestamp, height) 
-VALUES ($1, $2, $3, $4, $5) 
-ON CONFLICT ON CONSTRAINT unique_vote DO UPDATE
-	SET option = excluded.option,
-		timestamp = excluded.timestamp,
-		height = excluded.height
-WHERE proposal_vote.height <= excluded.height`
+VALUES ($1, $2, $3, $4, $5)`
 
 	// Store the voter account
 	err := db.SaveAccounts([]types.Account{types.NewAccount(vote.Voter)})
