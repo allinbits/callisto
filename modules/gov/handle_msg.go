@@ -32,6 +32,8 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 		return m.handleMsgDeposit(tx, cosmosMsg)
 	case *govtypes.MsgVote:
 		return m.handleMsgVote(tx, cosmosMsg)
+	case *govtypes.MsgVoteWeighted:
+		return m.handleMsgVoteWeighted(tx, cosmosMsg)
 	}
 
 	return nil

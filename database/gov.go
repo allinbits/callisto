@@ -288,8 +288,8 @@ WHERE proposal_deposit.height <= excluded.height`
 // SaveVote allows to save for the given height and the message vote
 func (db *Db) SaveVote(vote types.Vote) error {
 	query := `
-INSERT INTO proposal_vote (proposal_id, voter_address, option, timestamp, height) 
-VALUES ($1, $2, $3, $4, $5)`
+INSERT INTO proposal_vote (proposal_id, voter_address, option, weight, timestamp, height) 
+VALUES ($1, $2, $3, $4, $5, $6)`
 
 	// Store the voter account
 	err := db.SaveAccounts([]types.Account{types.NewAccount(vote.Voter)})
@@ -297,7 +297,7 @@ VALUES ($1, $2, $3, $4, $5)`
 		return fmt.Errorf("error while storing voter account: %s", err)
 	}
 
-	_, err = db.SQL.Exec(query, vote.ProposalID, vote.Voter, vote.Option.String(), vote.Timestamp, vote.Height)
+	_, err = db.SQL.Exec(query, vote.ProposalID, vote.Voter, vote.Option.String(), vote.Weight, vote.Timestamp, vote.Height)
 	if err != nil {
 		return fmt.Errorf("error while storing vote: %s", err)
 	}
