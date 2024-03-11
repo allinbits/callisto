@@ -41,10 +41,11 @@ func (m *Module) UpdateProposal(height int64, blockTime time.Time, id uint64) er
 	if err != nil {
 		return fmt.Errorf("error while updating proposal status: %s", err)
 	}
-
-	err = m.updateProposalTallyResult(proposal.ProposalId, height)
-	if err != nil {
-		return fmt.Errorf("error while updating proposal tally result: %s", err)
+	if proposal.Status == govtypes.StatusVotingPeriod {
+		err = m.updateProposalTallyResult(proposal.ProposalId, height)
+		if err != nil {
+			return fmt.Errorf("error while updating proposal tally result: %s", err)
+		}
 	}
 
 	err = m.updateAccounts(proposal)
