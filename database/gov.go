@@ -284,12 +284,20 @@ WHERE proposal_deposit.height <= excluded.height`
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+func (db *Db) CleanVote(proposal_id uint64, voter string) error {
+	flagQuery := `UPDATE proposal_vote SET is_valid=FALSE WHERE proposal_id=$1 AND voter_address=$2`
+	_, err := db.SQL.Exec(flagQuery, proposal_id, voter)
+	if err != nil {
+		return fmt.Errorf("error while updating past vote: %s", err)
+	}
+	return nil
+}
 
 // SaveVote allows to save for the given height and the message vote
 func (db *Db) SaveVote(vote types.Vote) error {
 	query := `
-INSERT INTO proposal_vote (proposal_id, voter_address, option, weight, timestamp, height) 
-VALUES ($1, $2, $3, $4, $5, $6)`
+INSERT INTO proposal_vote (proposal_id, voter_address, is_valid, option, weight, timestamp, height) 
+VALUES ($1, $2, TRUE, $3, $4, $5, $6)`
 
 	// Store the voter account
 	err := db.SaveAccounts([]types.Account{types.NewAccount(vote.Voter)})

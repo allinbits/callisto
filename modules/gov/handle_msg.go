@@ -116,7 +116,10 @@ func (m *Module) handleMsgVote(tx *juno.Tx, msg *govtypes.MsgVote) error {
 	}
 
 	vote := types.NewVote(msg.ProposalId, msg.Voter, msg.Option, "1.0", txTimestamp, tx.Height)
-
+	err = m.db.CleanVote(msg.ProposalId, msg.Voter)
+	if err != nil {
+		return err
+	}
 	return m.db.SaveVote(vote)
 }
 
@@ -125,7 +128,10 @@ func (m *Module) handleMsgVoteWeighted(tx *juno.Tx, msg *govtypes.MsgVoteWeighte
 	if err != nil {
 		return fmt.Errorf("error while parsing time: %s", err)
 	}
-
+	err = m.db.CleanVote(msg.ProposalId, msg.Voter)
+	if err != nil {
+		return err
+	}
 	for _, option := range msg.Options {
 		vote := types.NewVote(msg.ProposalId, msg.Voter, option.Option, option.Weight.String(), txTimestamp, tx.Height)
 		err = m.db.SaveVote(vote)
