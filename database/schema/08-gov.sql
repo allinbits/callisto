@@ -85,3 +85,67 @@ CREATE TABLE proposal_validator_status_snapshot
 );
 CREATE INDEX proposal_validator_status_snapshot_proposal_id_index ON proposal_validator_status_snapshot (proposal_id);
 CREATE INDEX proposal_validator_status_snapshot_validator_address_index ON proposal_validator_status_snapshot (validator_address);
+
+CREATE OR REPLACE FUNCTION public.active_first(proposal_row proposal)
+ RETURNS integer
+ LANGUAGE sql
+ STABLE
+AS $function$
+SELECT 
+CASE WHEN proposal_row.status='PROPOSAL_STATUS_PASSED' THEN 3
+WHEN proposal_row.status='PROPOSAL_STATUS_DEPOSIT_PERIOD' THEN 1
+ WHEN proposal_row.status='PROPOSAL_STATUS_VOTING_PERIOD' THEN 2
+ WHEN proposal_row.status='PROPOSAL_STATUS_REJECTED' THEN 4
+ WHEN proposal_row.status='PROPOSAL_STATUS_FAILED' THEN 5
+ WHEN proposal_row.status='PROPOSAL_STATUS_INVALID' THEN 6
+ELSE 7
+END
+$function$
+
+CREATE OR REPLACE FUNCTION public.failed_first(proposal_row proposal)
+ RETURNS integer
+ LANGUAGE sql
+ STABLE
+AS $function$
+SELECT 
+CASE WHEN proposal_row.status='PROPOSAL_STATUS_PASSED' THEN 4
+WHEN proposal_row.status='PROPOSAL_STATUS_DEPOSIT_PERIOD' THEN 2
+ WHEN proposal_row.status='PROPOSAL_STATUS_VOTING_PERIOD' THEN 3
+ WHEN proposal_row.status='PROPOSAL_STATUS_REJECTED' THEN 5
+ WHEN proposal_row.status='PROPOSAL_STATUS_FAILED' THEN 1
+ WHEN proposal_row.status='PROPOSAL_STATUS_INVALID' THEN 6
+ELSE 7
+END
+$function$
+
+CREATE OR REPLACE FUNCTION public.passed_first(proposal_row proposal)
+ RETURNS integer
+ LANGUAGE sql
+ STABLE
+AS $function$
+SELECT 
+CASE WHEN proposal_row.status='PROPOSAL_STATUS_PASSED' THEN 1
+WHEN proposal_row.status='PROPOSAL_STATUS_DEPOSIT_PERIOD' THEN 2
+ WHEN proposal_row.status='PROPOSAL_STATUS_VOTING_PERIOD' THEN 3
+ WHEN proposal_row.status='PROPOSAL_STATUS_REJECTED' THEN 4
+ WHEN proposal_row.status='PROPOSAL_STATUS_FAILED' THEN 5
+ WHEN proposal_row.status='PROPOSAL_STATUS_INVALID' THEN 6
+ELSE 7
+END
+$function$
+
+CREATE OR REPLACE FUNCTION public.rejected_first(proposal_row proposal)
+ RETURNS integer
+ LANGUAGE sql
+ STABLE
+AS $function$
+SELECT 
+CASE WHEN proposal_row.status='PROPOSAL_STATUS_PASSED' THEN 4
+WHEN proposal_row.status='PROPOSAL_STATUS_DEPOSIT_PERIOD' THEN 2
+ WHEN proposal_row.status='PROPOSAL_STATUS_VOTING_PERIOD' THEN 3
+ WHEN proposal_row.status='PROPOSAL_STATUS_REJECTED' THEN 1
+ WHEN proposal_row.status='PROPOSAL_STATUS_FAILED' THEN 5
+ WHEN proposal_row.status='PROPOSAL_STATUS_INVALID' THEN 6
+ELSE 7
+END
+$function$
