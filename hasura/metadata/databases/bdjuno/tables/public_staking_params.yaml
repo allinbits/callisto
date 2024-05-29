@@ -2,11 +2,10 @@ table:
   name: staking_params
   schema: public
 select_permissions:
-- permission:
-    allow_aggregations: false
-    columns:
-    - params
-    - height
-    filter: {}
-    limit: 1
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - params
+        - height
+      filter: {}
+      limit: 1

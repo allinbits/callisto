@@ -284,17 +284,20 @@ WHERE proposal_deposit.height <= excluded.height`
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+func (db *Db) CleanVote(proposal_id uint64, voter string) error {
+	flagQuery := `UPDATE proposal_vote SET is_valid=FALSE WHERE proposal_id=$1 AND voter_address=$2`
+	_, err := db.SQL.Exec(flagQuery, proposal_id, voter)
+	if err != nil {
+		return fmt.Errorf("error while updating past vote: %s", err)
+	}
+	return nil
+}
 
 // SaveVote allows to save for the given height and the message vote
 func (db *Db) SaveVote(vote types.Vote) error {
 	query := `
-INSERT INTO proposal_vote (proposal_id, voter_address, option, timestamp, height) 
-VALUES ($1, $2, $3, $4, $5) 
-ON CONFLICT ON CONSTRAINT unique_vote DO UPDATE
-	SET option = excluded.option,
-		timestamp = excluded.timestamp,
-		height = excluded.height
-WHERE proposal_vote.height <= excluded.height`
+INSERT INTO proposal_vote (proposal_id, voter_address, is_valid, option, weight, timestamp, height) 
+VALUES ($1, $2, TRUE, $3, $4, $5, $6)`
 
 	// Store the voter account
 	err := db.SaveAccounts([]types.Account{types.NewAccount(vote.Voter)})
@@ -302,7 +305,7 @@ WHERE proposal_vote.height <= excluded.height`
 		return fmt.Errorf("error while storing voter account: %s", err)
 	}
 
-	_, err = db.SQL.Exec(query, vote.ProposalID, vote.Voter, vote.Option.String(), vote.Timestamp, vote.Height)
+	_, err = db.SQL.Exec(query, vote.ProposalID, vote.Voter, vote.Option.String(), vote.Weight, vote.Timestamp, vote.Height)
 	if err != nil {
 		return fmt.Errorf("error while storing vote: %s", err)
 	}
@@ -332,14 +335,6 @@ func (db *Db) SaveTallyResults(tallys []types.TallyResult) error {
 	}
 
 	query = query[:len(query)-1] // Remove trailing ","
-	query += `
-ON CONFLICT ON CONSTRAINT unique_tally_result DO UPDATE 
-	SET yes = excluded.yes, 
-	    abstain = excluded.abstain, 
-	    no = excluded.no, 
-	    no_with_veto = excluded.no_with_veto,
-	    height = excluded.height
-WHERE proposal_tally_result.height <= excluded.height`
 	_, err := db.SQL.Exec(query, param...)
 	if err != nil {
 		return fmt.Errorf("error while storing tally result: %s", err)
@@ -354,13 +349,7 @@ WHERE proposal_tally_result.height <= excluded.height`
 func (db *Db) SaveProposalStakingPoolSnapshot(snapshot types.ProposalStakingPoolSnapshot) error {
 	stmt := `
 INSERT INTO proposal_staking_pool_snapshot (proposal_id, bonded_tokens, not_bonded_tokens, height)
-VALUES ($1, $2, $3, $4)
-ON CONFLICT ON CONSTRAINT unique_staking_pool_snapshot DO UPDATE SET
-	proposal_id = excluded.proposal_id,
-    bonded_tokens = excluded.bonded_tokens,
-	not_bonded_tokens = excluded.not_bonded_tokens, 
-	height = excluded.height
-WHERE proposal_staking_pool_snapshot.height <= excluded.height`
+VALUES ($1, $2, $3, $4)`
 
 	_, err := db.SQL.Exec(stmt,
 		snapshot.ProposalID, snapshot.Pool.BondedTokens.String(), snapshot.Pool.NotBondedTokens.String(), snapshot.Pool.Height)
@@ -392,15 +381,6 @@ VALUES `
 	}
 
 	stmt = stmt[:len(stmt)-1]
-	stmt += `
-ON CONFLICT ON CONSTRAINT unique_validator_status_snapshot DO UPDATE 
-	SET proposal_id = excluded.proposal_id,
-		validator_address = excluded.validator_address,
-		voting_power = excluded.voting_power, 
-		status = excluded.status, 
-		jailed = excluded.jailed,
-		height = excluded.height
-WHERE proposal_validator_status_snapshot.height <= excluded.height`
 	_, err := db.SQL.Exec(stmt, args...)
 	if err != nil {
 		return fmt.Errorf("error while storing proposal validator statuses snapshot: %s", err)
