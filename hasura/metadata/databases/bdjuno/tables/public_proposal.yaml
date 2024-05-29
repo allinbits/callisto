@@ -2,72 +2,98 @@ table:
   name: proposal
   schema: public
 object_relationships:
-- name: proposal_tally_result
-  using:
-    manual_configuration:
-      column_mapping:
-        id: proposal_id
-      insertion_order: null
-      remote_table:
-        name: proposal_tally_result
-        schema: public
-- name: proposer
-  using:
-    foreign_key_constraint_on: proposer_address
-- name: staking_pool_snapshot
-  using:
-    manual_configuration:
-      column_mapping:
-        id: proposal_id
-      insertion_order: null
-      remote_table:
-        name: proposal_staking_pool_snapshot
-        schema: public
+  - name: proposal_tally_result
+    using:
+      manual_configuration:
+        column_mapping:
+          id: proposal_id
+        insertion_order: null
+        remote_table:
+          name: proposal_tally_result
+          schema: public
+  - name: proposer
+    using:
+      foreign_key_constraint_on: proposer_address
+  - name: staking_pool_snapshot
+    using:
+      manual_configuration:
+        column_mapping:
+          id: proposal_id
+        insertion_order: null
+        remote_table:
+          name: proposal_staking_pool_snapshot
+          schema: public
 array_relationships:
-- name: proposal_deposits
-  using:
-    foreign_key_constraint_on:
-      column: proposal_id
-      table:
-        name: proposal_deposit
+  - name: proposal_deposits
+    using:
+      foreign_key_constraint_on:
+        column: proposal_id
+        table:
+          name: proposal_deposit
+          schema: public
+  - name: proposal_tally_results
+    using:
+      foreign_key_constraint_on:
+        column: proposal_id
+        table:
+          name: proposal_tally_result
+          schema: public
+  - name: proposal_votes
+    using:
+      foreign_key_constraint_on:
+        column: proposal_id
+        table:
+          name: proposal_vote
+          schema: public
+  - name: validator_status_snapshots
+    using:
+      foreign_key_constraint_on:
+        column: proposal_id
+        table:
+          name: proposal_validator_status_snapshot
+          schema: public
+computed_fields:
+  - name: active_first_order
+    definition:
+      function:
+        name: active_first
         schema: public
-- name: proposal_tally_results
-  using:
-    foreign_key_constraint_on:
-      column: proposal_id
-      table:
-        name: proposal_tally_result
+  - name: failed_first_order
+    definition:
+      function:
+        name: failed_first
         schema: public
-- name: proposal_votes
-  using:
-    foreign_key_constraint_on:
-      column: proposal_id
-      table:
-        name: proposal_vote
+  - name: passed_first_order
+    definition:
+      function:
+        name: passed_first
         schema: public
-- name: validator_status_snapshots
-  using:
-    foreign_key_constraint_on:
-      column: proposal_id
-      table:
-        name: proposal_validator_status_snapshot
+  - name: rejected_first_order
+    definition:
+      function:
+        name: rejected_first
         schema: public
 select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - title
-    - description
-    - proposal_route
-    - proposal_type
-    - id
-    - submit_time
-    - deposit_end_time
-    - voting_start_time
-    - voting_end_time
-    - proposer_address
-    - status
-    - content
-    filter: {}
-    limit: 100
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - title
+        - description
+        - proposal_route
+        - proposal_type
+        - id
+        - submit_time
+        - deposit_end_time
+        - voting_start_time
+        - voting_end_time
+        - proposer_address
+        - status
+        - content
+      computed_fields:
+        - active_first_order
+        - failed_first_order
+        - passed_first_order
+        - rejected_first_order
+      filter: {}
+      limit: 100
+      allow_aggregations: true
